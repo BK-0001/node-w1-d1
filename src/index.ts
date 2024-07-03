@@ -37,8 +37,13 @@ const todos: Todo[] = [
 ];
 
 server.on("request", (req, res) => {
-  res.writeHead(200, { "Content-Type": "application/json" });
-  res.end("Hello World");
+  // GET request with endpoint /todos
+  // req.method and req.url
+
+  if (req.method === "GET" && req.url === "/todos") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(todos));
+  }
 });
 
 server.listen(PORT, HOST, () => {
