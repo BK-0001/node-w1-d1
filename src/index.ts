@@ -93,6 +93,31 @@ server.on("request", (req, res) => {
       res.end(JSON.stringify(data));
     });
   }
+
+  // url
+  // /todos/2a965e79-4f18-4670-b0b4-48aeb9602550
+  if (req.method === "DELETE" && req.url?.includes("/todos")) {
+    // id from url
+    const id = req.url.split("/")[2];
+
+    // check if the resource is existing
+    const todoIndex = todos.findIndex((todo) => todo.id === id);
+
+    if (todoIndex === -1) {
+      // send 404
+      res.writeHead(404, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: `Not found with todo id: ${id}` }));
+      return;
+    }
+
+    // otherwise
+    // delete the todo with the id passed via url
+
+    todos.splice(todoIndex, 1);
+
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ message: "Successfully deleted" }));
+  }
 });
 
 server.listen(PORT, HOST, () => {
