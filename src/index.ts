@@ -64,6 +64,35 @@ server.on("request", (req, res) => {
       res.end(JSON.stringify(newTodo));
     });
   }
+
+  // url
+  // /todos/2a965e79-4f18-4670-b0b4-48aeb9602550
+  if (req.method === "PUT" && req.url?.includes("/todos")) {
+    // data event to receive the data
+    req.on("data", (chunk: Buffer) => {
+      // id from url
+      const id = req.url!.split("/")[2];
+
+      // check if the resource is existing
+      const todoIndex = todos.findIndex((todo) => todo.id === id);
+
+      if (todoIndex === -1) {
+        // send 404
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: `Not found with todo id: ${id}` }));
+        return;
+      }
+
+      // otherwise we are going to update the existing todo
+
+      const data: Todo = JSON.parse(chunk.toString());
+
+      todos.splice(todoIndex, 1, data);
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(data));
+    });
+  }
 });
 
 server.listen(PORT, HOST, () => {
