@@ -44,6 +44,26 @@ server.on("request", (req, res) => {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(todos));
   }
+
+  if (req.method === "POST" && req.url === "/todos") {
+    // receive data using data event
+    req.on("data", (chunk) => {
+      // convert uint8array to js object
+      const data = JSON.parse(chunk.toString());
+
+      // create new todo object with id
+      const newTodo = {
+        id: crypto.randomUUID(),
+        ...data
+      };
+
+      // store the new todo
+      todos.push(newTodo);
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(newTodo));
+    });
+  }
 });
 
 server.listen(PORT, HOST, () => {
